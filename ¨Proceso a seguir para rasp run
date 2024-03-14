@@ -1,0 +1,49 @@
+Usando systemd
+--------------s
+nano es un editor interno de rasp
+BASh es escribir adentro del nano
+
+1. Crea un nuevo archivo de servicio `systemd` utilizando un editor de texto. Por ejemplo, para crear un servicio llamado `mi_script.service`, puedes usar `nano`:
+
+    ```bash
+    sudo nano /etc/systemd/system/mi_script.service
+    ```
+
+2. Añade el siguiente contenido al archivo:
+
+    ```ini
+    [Unit]
+    Description=Mi script de Python
+    After=multi-user.target
+
+    [Service]
+    Type=simple
+    ExecStart=/usr/bin/python3 /ruta/a/tu/script.py
+    Restart=on-abort
+
+    [Install]
+    WantedBy=multi-user.target
+    ```
+
+    Asegúrate de reemplazar `/ruta/a/tu/script.py` con la ruta completa a tu script de Python.
+
+3. Guarda y cierra el archivo. Si estás usando `nano`, puedes hacerlo presionando `CTRL+X`, luego `Y` para confirmar los cambios, y `Enter` para salir.
+
+4. Habilita el servicio para que se inicie en el arranque:
+
+    ```bash
+    sudo systemctl enable mi_script.service
+    ```
+
+5. (Opcional) Puedes iniciar el servicio manualmente sin reiniciar usando:
+
+    ```bash
+    sudo systemctl start mi_script.service
+    ```
+
+6. (Opcional) Para verificar que el servicio se está ejecutando correctamente:
+
+    ```bash
+    sudo systemctl status mi_script.service
+    ```
+
