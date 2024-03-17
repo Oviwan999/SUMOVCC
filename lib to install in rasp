@@ -1,3 +1,7 @@
+installar esto
+
 sudo apt-get  install libgpiod2 libgpiod-dev
 sudo apt install gpiod
+
+correr este comando en bash
 gpioinfo

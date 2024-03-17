@@ -6,6 +6,7 @@ import time
 # Configurar los pines GPIO
 chip = gpiod.Chip('gpiochip4')
 
+
 pin_izquierda = 17
 izquierda = chip.get_line(pin_izquierda)
 pin_centro = 27
