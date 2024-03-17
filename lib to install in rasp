@@ -5,3 +5,6 @@ sudo apt install gpiod
 
 correr este comando en bash
 gpioinfo
+
+keyring
+13041992
