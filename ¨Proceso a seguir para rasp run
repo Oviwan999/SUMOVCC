@@ -47,3 +47,6 @@ BASh es escribir adentro del nano
     sudo systemctl status mi_script.service
     ```
 
+
+
+

@@ -1,0 +1,3 @@
+sudo apt-get  install libgpiod2 libgpiod-dev
+sudo apt install gpiod
+gpioinfo
