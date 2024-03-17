@@ -1,22 +1,26 @@
 import cv2
 import numpy as np
-import RPi.GPIO as GPIO
+import gpiod
 import time
 
 # Configurar los pines GPIO
-GPIO.setmode(GPIO.BCM)
-pin_izquierda = 17
-pin_centro = 27
-pin_derecha = 22
+chip = gpiod.Chip('gpiochip0')
 
-GPIO.setup(pin_izquierda, GPIO.OUT)
-GPIO.setup(pin_centro, GPIO.OUT)
-GPIO.setup(pin_derecha, GPIO.OUT)
+pin_izquierda = 17
+izquierda = chip.get_line(pin_izquierda)
+pin_centro = 27
+centro = chip.get_line(pin_centro)
+pin_derecha = 22
+derecha = chip.get_line(pin_derecha)
+
+izquierda.request(consumer="LED", type=gpiod.LINE_REQ_DIR_OUT)
+centro.request(consumer="LED", type=gpiod.LINE_REQ_DIR_OUT)
+derecha.request(consumer="LED", type=gpiod.LINE_REQ_DIR_OUT)
 
 def apagar_gpios():
-    GPIO.output(pin_izquierda, GPIO.LOW)
-    GPIO.output(pin_centro, GPIO.LOW)
-    GPIO.output(pin_derecha, GPIO.LOW)
+    izquierda.set_value(0)
+    centro.set_value(0)
+    derecha.set_value(0)
 
 def encontrar_contorno_con_mayor_cy(imagen, area_minima, x_roi, y_roi, w_roi, h_roi):
     roi = imagen[y_roi:y_roi+h_roi, x_roi:x_roi+w_roi]
@@ -78,11 +82,17 @@ try:
         if datos_contorno:
             cx, cy, area = datos_contorno
             if cx < x1:
-                GPIO.output(pin_izquierda, GPIO.HIGH)
+                izquierda.set_value(1)
+                derecha.set_value(0)
+                centro.set_value(0)
             elif cx > x2:
-                GPIO.output(pin_derecha, GPIO.HIGH)
+                izquierda.set_value(0)
+                derecha.set_value(1)
+                centro.set_value(0)
             else:
-                GPIO.output(pin_centro, GPIO.HIGH)
+                izquierda.set_value(0)
+                derecha.set_value(0)
+                centro.set_value(1)
 
         cv2.imshow('Detector de objetos rojos en tiempo real', frame_procesado)
 
@@ -91,4 +101,6 @@ try:
 finally:
     cap.release()
     cv2.destroyAllWindows()
-    GPIO.cleanup
+    izquierda.release()
+    centro.release()
+    derecha.release()
