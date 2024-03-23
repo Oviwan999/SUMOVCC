@@ -65,7 +65,7 @@ while True:
 
     # Procesar el fotograma
     frame_procesado, datos_contorno = encontrar_contorno_con_mayor_cy(frame, area_minima)
-    x1,x2 = 200,4q00
+    x1,x2 = 200,400
     # Mostrar el fotograma procesado
     altura = frame_procesado.shape[0]  # Obtener la altura de la imagen
     cv2.line(frame_procesado, (x1, 0), (x1, altura), (255, 255, 255), 2)
