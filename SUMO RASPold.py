@@ -1,27 +1,22 @@
 import cv2
 import numpy as np
-import gpiod
+import RPi.GPIO as GPIO
 import time
 
 # Configurar los pines GPIO
-chip = gpiod.Chip('gpiochip4')
-
-
+GPIO.setmode(GPIO.BCM)
 pin_izquierda = 17
-izquierda = chip.get_line(pin_izquierda)
 pin_centro = 27
-centro = chip.get_line(pin_centro)
 pin_derecha = 22
-derecha = chip.get_line(pin_derecha)
 
-izquierda.request(consumer="izq", type=gpiod.LINE_REQ_DIR_OUT)
-centro.request(consumer="CTr", type=gpiod.LINE_REQ_DIR_OUT)
-derecha.request(consumer="DR", type=gpiod.LINE_REQ_DIR_OUT)
+GPIO.setup(pin_izquierda, GPIO.OUT)
+GPIO.setup(pin_centro, GPIO.OUT)
+GPIO.setup(pin_derecha, GPIO.OUT)
 
 def apagar_gpios():
-    izquierda.set_value(0)
-    centro.set_value(0)
-    derecha.set_value(0)
+    GPIO.output(pin_izquierda, GPIO.LOW)
+    GPIO.output(pin_centro, GPIO.LOW)
+    GPIO.output(pin_derecha, GPIO.LOW)
 
 def encontrar_contorno_con_mayor_cy(imagen, area_minima, x_roi, y_roi, w_roi, h_roi):
     roi = imagen[y_roi:y_roi+h_roi, x_roi:x_roi+w_roi]
@@ -73,9 +68,9 @@ if not cap.isOpened():
     print("No se pudo abrir la cámara")
     exit()
 
-area_minima = 100
-x_roi, y_roi, w_roi, h_roi = 30, 40, 320-50, 190
-x1, x2 = 120, 180
+area_minima = 500
+x_roi, y_roi, w_roi, h_roi = 100, 60, 120, 120
+x1, x2 = 110, 210
 
 try:
     while True:
@@ -86,27 +81,16 @@ try:
 
         cv2.rectangle(frame, (x_roi, y_roi), (x_roi + w_roi, y_roi + h_roi), (255, 0, 0), 2)
         frame_procesado, datos_contorno = encontrar_contorno_con_mayor_cy(frame, area_minima, x_roi, y_roi, w_roi, h_roi)
-        altura = frame_procesado.shape[0]
-        cv2.line(frame_procesado, (x1, 0), (x1, altura), (255, 255, 255), 2)
-        cv2.line(frame_procesado, (x2, 0), (x2, altura), (255, 255, 255), 2)
+
         apagar_gpios()  # Asegurarse de que todos los GPIOs estén apagados antes de encender uno nuevo
         if datos_contorno:
             cx, cy, area = datos_contorno
             if cx < x1:
-                izquierda.set_value(1)
-                #derecha.set_value(0)
-                #centro.set_value(0)
-                print("izquierda")
+                GPIO.output(pin_izquierda, GPIO.HIGH)
             elif cx > x2:
-                #izquierda.set_value(0)
-                derecha.set_value(1)
-                #centro.set_value(0)
-                print("derecha")
+                GPIO.output(pin_derecha, GPIO.HIGH)
             else:
-                #izquierda.set_value(0)
-                #derecha.set_value(0)
-                centro.set_value(1)
-                print("centro")
+                GPIO.output(pin_centro, GPIO.HIGH)
 
         cv2.imshow('Detector de objetos rojos en tiempo real', frame_procesado)
 
@@ -115,6 +99,4 @@ try:
 finally:
     cap.release()
     cv2.destroyAllWindows()
-    izquierda.release()
-    centro.release()
-    derecha.release()
+    GPIO.cleanup
