@@ -6,8 +6,8 @@ def encontrar_contorno_con_mayor_cy(imagen, area_minima):
     hsv = cv2.cvtColor(imagen, cv2.COLOR_BGR2HSV)
     rango_bajo_rojo1 = np.array([0, 158, 222])
     rango_alto_rojo1 = np.array([69, 255, 255])
-    rango_bajo_rojo2 = np.array([0, 158, 222])
-    rango_alto_rojo2 = np.array([69, 255, 255])
+    rango_bajo_rojo2 = np.array([39, 212, 83])
+    rango_alto_rojo2 = np.array([180, 255, 221])
     mascara1 = cv2.inRange(hsv, rango_bajo_rojo1, rango_alto_rojo1)
     mascara2 = cv2.inRange(hsv, rango_bajo_rojo2, rango_alto_rojo2)
     mascara_rojo = cv2.bitwise_or(mascara1, mascara2)
@@ -65,7 +65,7 @@ while True:
 
     # Procesar el fotograma
     frame_procesado, datos_contorno = encontrar_contorno_con_mayor_cy(frame, area_minima)
-    x1,x2 = 200,4q00
+    x1,x2 = 200,400
     # Mostrar el fotograma procesado
     altura = frame_procesado.shape[0]  # Obtener la altura de la imagen
     cv2.line(frame_procesado, (x1, 0), (x1, altura), (255, 255, 255), 2)
